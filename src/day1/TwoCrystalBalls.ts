@@ -1,12 +1,15 @@
 export default function two_crystal_balls(breaks: boolean[]): number {
     const squirt = Math.floor(Math.sqrt(breaks.length));
-    for (let i = squirt-1; i < breaks.length; i += squirt) {
+    let i = squirt;
+    for (; i < breaks.length; i += squirt) {
         if (breaks[i]) {
-            for (let j = i - squirt; j <= i; j++) {
-                if (breaks[j]) {
-                    return j;
-                }
-            }
+            break;
+        }
+    }
+    i -= squirt;
+    for (let j = 0; j < squirt && i < breaks.length; ++j, ++i) {
+        if (breaks[i]) {
+            return i;
         }
     }
     return -1;
