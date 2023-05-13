@@ -6,7 +6,6 @@ export default class Queue<T> {
     public length: number;
     private head?: QNode<T>
     private tail?: QNode<T>
-    private readonly array: T[];
 
     constructor() {
         this.length = 0;
@@ -32,7 +31,7 @@ export default class Queue<T> {
         const head = this.head;
         this.head = this.head.next;
         head.next = undefined;
-        if (this.length === 0){
+        if (this.length === 0) {
             this.tail = undefined;
         }
         return head.value;
