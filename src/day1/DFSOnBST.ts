@@ -5,7 +5,10 @@ function search(head: BinaryNode<number> | null, needle: number): boolean {
     if (head.value === needle) {
         return true;
     }
-    return search(head.left, needle) || search(head.right, needle);
+    if (head.value < needle) {
+        return search(head.right, needle);
+    }
+    return search(head.left, needle);
 }
 
 export default function dfs(head: BinaryNode<number>, needle: number): boolean {
