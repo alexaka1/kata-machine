@@ -1,4 +1,4 @@
-type Node<T> = { value: T; next?: Node<T>; };
+type Node<T> = { value: T; next?: Node<T> };
 export default class SinglyLinkedList<T> {
     public length: number;
     private head?: Node<T>;
@@ -10,12 +10,12 @@ export default class SinglyLinkedList<T> {
     }
 
     prepend(item: T): void {
-        const node: Node<T> = {value: item, next: this.head};
+        this.length++;
+        const node: Node<T> = { value: item, next: this.head };
         if (!this.head) {
             this.tail = node;
         }
         this.head = node;
-        this.length++;
     }
 
     insertAt(item: T, idx: number): void {
@@ -23,27 +23,27 @@ export default class SinglyLinkedList<T> {
         if (idx === 0) {
             this.prepend(item);
             return;
-        } else if (idx >= this.length) {
+        } else if (idx === this.length) {
             this.append(item);
             return;
         }
-        this.length++;
         // worst case
+        const node: Node<T> = { value: item };
         let current = this.head;
-        let next: Node<T> | undefined = current;
-        for (let i = 1; i <= idx && current; i++) {
-            next = current?.next;
-            if (i === idx) {
-                const next: Node<T> = {value: item, next: current?.next};
-                current.next = {next: next, value: item};
-            }
-            current = next;
+        for (let i = 0; i < idx && current; i++) {
+            current = current.next;
+        }
+        if (current) {
+            this.length++;
+            const next = current?.next;
+            current.next = node;
+            node.next = next;
         }
     }
 
     append(item: T): void {
         this.length++;
-        const next: Node<T> = {value: item, next: undefined};
+        const next: Node<T> = { value: item, next: undefined };
         if (!this.tail) {
             this.tail = this.head = next;
         } else {
@@ -59,19 +59,22 @@ export default class SinglyLinkedList<T> {
         if (this.head?.value === item) {
             return this.removeAt(0);
         }
-        let prev = this.head;
-        let current = this.head?.next;
-        while (current != null) {
-            if (current.value === item) {
-                const value = current.value;
-                prev!.next = current.next;
-                this.length--;
-                return value;
+        let curr = this.head;
+        let prev: Node<T> | undefined = undefined;
+        for (let i = 0; i < this.length && curr; i++) {
+            if (curr.value === item) {
+                break;
             }
-            prev = current;
-            current = current.next;
+            prev = curr;
+            curr = curr.next;
         }
-        return undefined;
+        if (!(curr && prev)) {
+            return undefined;
+        }
+        this.length--;
+        prev.next = curr.next;
+        curr.next = undefined;
+        return curr.value;
     }
 
     get(idx: number): T | undefined {
@@ -87,7 +90,7 @@ export default class SinglyLinkedList<T> {
         }
         // worst case
         let current = this.head;
-        for (let i = 1; i < idx; i++) {
+        for (let i = 0; i < idx; i++) {
             current = current?.next;
         }
         return current?.value;
@@ -102,25 +105,22 @@ export default class SinglyLinkedList<T> {
         }
         if (idx === 0) {
             const value = this.head?.value;
-            const next = this.head?.next;
-            if (next != null) {
-                this.head = next;
-            }
+            this.head = this.head?.next;
             this.length--;
             return value;
         }
         let current = this.head;
         let prev = this.head;
-        for (let i = 1; i <= idx && current; i++) {
-            current = current.next;
-            if (i === idx) {
-                prev!.next = current?.next;
-                this.length--;
-                return current?.value;
-            }
+        for (let i = 0; i < idx && current; i++) {
             prev = current;
+            current = current.next;
         }
-        return undefined;
+        if (!(prev && current)) {
+            return undefined;
+        }
+        this.length--;
+        prev.next = current?.next;
+        current.next = undefined;
+        return current?.value;
     }
-
 }
